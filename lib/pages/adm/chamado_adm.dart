@@ -1,222 +1,383 @@
-// lib/pages/chamado_adm.dart
 import 'package:flutter/material.dart';
 
-class ChamadoAdmPage extends StatelessWidget {
-  ChamadoAdmPage({Key? key}) : super(key: key);
+class ChamadoAdmPage extends StatefulWidget {
+  const ChamadoAdmPage({Key? key}) : super(key: key);
 
-  final List<Map<String, String>> chamados = [
+  @override
+  State<ChamadoAdmPage> createState() => _ChamadoAdmPageState();
+}
+
+class _ChamadoAdmPageState extends State<ChamadoAdmPage>
+    with SingleTickerProviderStateMixin {
+  final azul = const Color(0xFF181883);
+  final amarelo = const Color(0xFFFFD700);
+  final laranja = const Color(0xFFFF9900);
+  final cinza = const Color(0xFF6B7280);
+  final fundo = const Color(0xFFFFFDF0);
+  final verde = const Color(0xFF10B981);
+
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+
+  final List<Map<String, dynamic>> chamados = [
     {
       "nome": "João Silva",
-      "cpf": "123.456.789-00",
+      "doc": "123.456.789-00",
       "titulo": "Chamado Técnico",
-      "comentario": "Câmera da frente não está funcionando.",
-      "data": "28/08/2025 10:45",
+      "descricao": "Câmera da frente não está funcionando.",
+      "dataChamado": DateTime(2025, 8, 28, 10, 45),
+      "status": "Aberto",
+      "resposta": null,
+      "dataResposta": null,
+      "respondidoPor": null,
     },
     {
       "nome": "Maria Oliveira",
-      "cpf": "987.654.321-00",
+      "doc": "987.654.321-00",
       "titulo": "Revisão de Alarme",
-      "comentario": "O alarme disparou sem motivo aparente.",
-      "data": "27/08/2025 15:12",
+      "descricao": "O alarme disparou sem motivo aparente.",
+      "dataChamado": DateTime(2025, 8, 27, 15, 12),
+      "status": "Aberto",
+      "resposta": null,
+      "dataResposta": null,
+      "respondidoPor": null,
     },
   ];
 
   @override
-  Widget build(BuildContext context) {
-    final azul = const Color(0xFF181883);
-    final laranja = const Color(0xFFFF9900);
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _controller.forward();
+  }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: azul),
-        title: Text(
-          "Chamados - ADM",
-          style: TextStyle(color: azul, fontWeight: FontWeight.bold),
+      backgroundColor: fundo,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppBar(
+              backgroundColor: azul,
+              elevation: 0,
+              leading: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+            Container(height: 2, width: double.infinity, color: amarelo),
+          ],
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: chamados.length,
-        itemBuilder: (context, index) {
-          final chamado = chamados[index];
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: laranja, width: 1.8),
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header (nome + cpf)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person, color: azul, size: 20),
-                        const SizedBox(width: 6),
-                        Text(
-                          chamado["nome"]!,
-                          style: TextStyle(
-                            color: azul,
-                            fontWeight: FontWeight.bold,
-                          ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, Color(0xFFFFFDF0)],
+          ),
+        ),
+        child: FadeTransition(
+          opacity: _fade,
+          child: SlideTransition(
+            position: _slide,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Chamados',
+                        style: TextStyle(
+                          color: azul,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3,
                         ),
-                      ],
-                    ),
-                    Text(
-                      chamado["cpf"]!,
-                      style: TextStyle(color: azul, fontSize: 13),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-
-                // Título + Data
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.build_circle, color: azul, size: 18),
-                        const SizedBox(width: 4),
-                        Text(
-                          chamado["titulo"]!,
-                          style: TextStyle(
-                            color: azul,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        width: 60,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: amarelo,
+                          borderRadius: BorderRadius.circular(3),
                         ),
-                      ],
-                    ),
-                    Text(
-                      chamado["data"]!,
-                      style: TextStyle(
-                        color: laranja,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Comentário
-                Text(
-                  chamado["comentario"]!,
-                  style: TextStyle(color: Colors.orange[700], fontSize: 14),
-                ),
-                const SizedBox(height: 12),
-
-                // Botões de ação (Responder e Status)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Botão Responder
-                    InkWell(
-                      onTap: () {
-                        _abrirDialogResposta(context, chamado["nome"]!);
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.reply, color: azul, size: 22),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Responder",
-                            style: TextStyle(
-                              color: azul,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 24),
+                      ...chamados.map(
+                        (c) => _ChamadoCard(
+                          chamado: c,
+                          azul: azul,
+                          amarelo: amarelo,
+                          laranja: laranja,
+                          cinza: cinza,
+                          verde: verde,
+                          onResponder: () => _abrirResposta(context, c),
+                        ),
                       ),
-                    ),
-
-                    // Botão Status (ampulheta/check)
-                    IconButton(
-                      icon: Icon(
-                        Icons.hourglass_bottom,
-                        color: laranja,
-                        size: 26,
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Status atualizado para Concluído"),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  void _abrirDialogResposta(BuildContext context, String nome) {
-    final TextEditingController respostaController = TextEditingController();
-    final azul = const Color(0xFF181883);
-    final laranja = const Color(0xFFFF9900);
+  void _abrirResposta(BuildContext context, Map<String, dynamic> chamado) {
+    final controller = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(
-          "Responder $nome",
-          style: TextStyle(color: azul, fontWeight: FontWeight.bold),
-        ),
-        content: TextField(
-          controller: respostaController,
-          maxLines: 4,
-          decoration: InputDecoration(
-            hintText: "Digite sua resposta...",
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: laranja, width: 2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: laranja, width: 2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancelar", style: TextStyle(color: azul)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: laranja,
-              foregroundColor: azul,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Resposta enviada com sucesso!"),
-                  backgroundColor: Colors.blue,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Responder chamado',
+                style: TextStyle(
+                  color: azul,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
                 ),
-              );
-            },
-            child: const Text("Enviar"),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Chamado aberto em ${_fmt(chamado["dataChamado"])}',
+                style: TextStyle(color: cinza, fontSize: 13),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'Digite sua resposta...',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: amarelo, width: 1.6),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: amarelo, width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Voltar', style: TextStyle(color: azul)),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: amarelo,
+                        foregroundColor: azul,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          chamado["resposta"] = controller.text;
+                          chamado["dataResposta"] = DateTime.now();
+                          chamado["respondidoPor"] = "João Silva (ADM)";
+                          chamado["status"] = "Concluído";
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Enviar',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _fmt(DateTime d) {
+    return '${d.day.toString().padLeft(2, '0')}/'
+        '${d.month.toString().padLeft(2, '0')}/'
+        '${d.year} • '
+        '${d.hour.toString().padLeft(2, '0')}:'
+        '${d.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _ChamadoCard extends StatelessWidget {
+  final Map<String, dynamic> chamado;
+  final Color azul;
+  final Color amarelo;
+  final Color laranja;
+  final Color cinza;
+  final Color verde;
+  final VoidCallback onResponder;
+
+  const _ChamadoCard({
+    required this.chamado,
+    required this.azul,
+    required this.amarelo,
+    required this.laranja,
+    required this.cinza,
+    required this.verde,
+    required this.onResponder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool concluido = chamado['status'] == 'Concluído';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: amarelo, width: 1.4),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  chamado['nome'],
+                  style: TextStyle(
+                    color: azul,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Text(
+                _fmt(chamado["dataChamado"]),
+                style: TextStyle(color: cinza, fontSize: 13),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(chamado['doc'], style: TextStyle(color: cinza, fontSize: 13)),
+          const SizedBox(height: 14),
+          Text(
+            chamado['titulo'],
+            style: TextStyle(
+              color: azul,
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            chamado['descricao'],
+            style: TextStyle(color: cinza, fontSize: 14),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              InkWell(
+                onTap: onResponder,
+                child: Row(
+                  children: [
+                    Icon(Icons.reply_rounded, color: azul, size: 20),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Responder',
+                      style: TextStyle(
+                        color: azul,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: concluido
+                      ? verde.withOpacity(0.15)
+                      : amarelo.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  chamado['status'],
+                  style: TextStyle(
+                    color: concluido ? verde : laranja,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  String _fmt(DateTime d) {
+    return '${d.day.toString().padLeft(2, '0')}/'
+        '${d.month.toString().padLeft(2, '0')}/'
+        '${d.year} • '
+        '${d.hour.toString().padLeft(2, '0')}:'
+        '${d.minute.toString().padLeft(2, '0')}';
   }
 }

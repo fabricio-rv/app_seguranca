@@ -1,85 +1,139 @@
-// lib/pages/adm/home_adm.dart
-
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navbar_geral.dart';
 
 class HomeAdmPage extends StatelessWidget {
-  final List<_MenuButton> buttons = [
-    _MenuButton(
-      'Chamados Técnicos,\nManutenções e Revisões',
-      Icons.build_circle_rounded,
-      '/chamado_adm',
-    ),
-    _MenuButton('Alertas Protepac', Icons.warning, '/alertas_protepac_adm'),
-    _MenuButton(
-      'Indicações de Clientes',
-      Icons.person_add_alt_1,
-      '/indicacao_cliente_adm',
-    ),
-    _MenuButton(
-      'Orçamentos',
-      Icons.request_page_rounded,
-      '/solicitacao_orcamento_adm',
-    ),
-    _MenuButton('Elogios', Icons.thumb_up, '/elogios_adm'), // ✅ corrigido
-    _MenuButton('Reclamações', Icons.thumb_down, '/reclamacao_adm'),
-    _MenuButton('Sugestões', Icons.lightbulb_outline, '/sugestao_adm'),
-  ];
+  const HomeAdmPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final crossAxisCount = 2;
-    final isSmallDevice = screenWidth < 350;
+    final azul = const Color(0xFF181883);
+    final amarelo = const Color(0xFFFFD700);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final height = constraints.maxHeight;
+            final width = constraints.maxWidth;
+
+            final logoHeight = math.min(130.0, height * 0.2);
+            final bottomNavHeight = 64.0;
+            final verticalPadding = 16.0;
+
+            final availableHeight =
+                height - logoHeight - bottomNavHeight - verticalPadding * 3;
+
+            final rowGap = 18.0;
+            final usableHeight = availableHeight - rowGap * 2;
+            final rowHeight = usableHeight / 3;
+
+            final horizontalPadding = 16.0;
+            final gridWidth = width - horizontalPadding * 2;
+            final crossSpacing = 14.0;
+            final itemWidth = (gridWidth - crossSpacing * 2) / 3;
+            final aspectRatio = itemWidth / rowHeight;
+
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.white, const Color(0xFFFFFDF0)],
+                ),
+              ),
               child: Column(
                 children: [
                   const SizedBox(height: 12),
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 120,
-                    fit: BoxFit.contain,
+                  SizedBox(
+                    height: logoHeight,
+                    child: Center(
+                      child: Image.asset(
+                        'assets/logo.png',
+                        height: logoHeight,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 42),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        _GridRow(
+                          height: rowHeight,
+                          aspectRatio: aspectRatio,
+                          buttons: const [
+                            _HomeButton(
+                              'Chamados',
+                              Icons.build_circle_rounded,
+                              '/chamado_adm',
+                            ),
+                            _HomeButton(
+                              'Indicações',
+                              Icons.person_add_alt_1,
+                              '/indicacao_cliente_adm',
+                            ),
+                            _HomeButton(
+                              'Alertas',
+                              Icons.warning_amber_rounded,
+                              '/alertas_protepac_adm',
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: rowGap),
+                        _GridRow(
+                          height: rowHeight,
+                          aspectRatio: aspectRatio,
+                          buttons: const [
+                            _HomeButton(
+                              'Orçamentos',
+                              Icons.request_page_rounded,
+                              '/solicitacao_orcamento_adm',
+                            ),
+                            _HomeButton(
+                              'Elogios',
+                              Icons.thumb_up_alt_rounded,
+                              '/elogios_adm',
+                            ),
+                            _HomeButton(
+                              'Reclamações',
+                              Icons.thumb_down_alt_rounded,
+                              '/reclamacao_adm',
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: rowGap),
+                        _GridRow(
+                          height: rowHeight,
+                          aspectRatio: aspectRatio,
+                          buttons: const [
+                            _HomeButton(
+                              'Adicionar Cliente',
+                              Icons.person_add_alt_1,
+                              '/adicionar_cliente',
+                            ),
+                            _HomeButton(
+                              'Editar Cliente',
+                              Icons.edit_rounded,
+                              '/editar_cliente',
+                            ),
+                            _HomeButton(
+                              'Sugestões',
+                              Icons.lightbulb_outline_rounded,
+                              '/sugestao_adm',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final b = buttons[index];
-                return _MenuCard(
-                  title: b.title,
-                  icon: b.icon,
-                  onTap: () {
-                    Navigator.pushNamed(context, b.route);
-                  },
-                  isSmall: isSmallDevice,
-                );
-              }, childCount: buttons.length),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 20,
-                childAspectRatio: screenWidth < 350
-                    ? 1.1
-                    : screenWidth < 410
-                    ? 1.2
-                    : 1.35,
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 18)),
-        ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: CustomBottomNavBarGeral(
         selectedIndex: 0,
@@ -87,8 +141,6 @@ class HomeAdmPage extends StatelessWidget {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, '/home_adm');
           } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/adicionar_adm');
-          } else if (index == 2) {
             Navigator.pushReplacementNamed(context, '/perfil_adm');
           }
         },
@@ -97,59 +149,130 @@ class HomeAdmPage extends StatelessWidget {
   }
 }
 
-class _MenuButton {
+class _HomeButton {
   final String title;
   final IconData icon;
   final String route;
-  _MenuButton(this.title, this.icon, this.route);
+  const _HomeButton(this.title, this.icon, this.route);
 }
 
-class _MenuCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool isSmall;
-  const _MenuCard({
-    required this.title,
-    required this.icon,
-    required this.onTap,
-    this.isSmall = false,
+class _GridRow extends StatelessWidget {
+  final double height;
+  final double aspectRatio;
+  final List<_HomeButton> buttons;
+
+  const _GridRow({
+    required this.height,
+    required this.aspectRatio,
+    required this.buttons,
   });
 
   @override
   Widget build(BuildContext context) {
-    double fontSize = isSmall ? 12 : (title.length > 30 ? 11 : 14);
-    double iconSize = isSmall ? 35 : 40;
+    return SizedBox(
+      height: height,
+      child: GridView.count(
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: 3,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 0,
+        childAspectRatio: aspectRatio,
+        children: buttons
+            .map(
+              (b) => _HomeCard(
+                title: b.title,
+                icon: b.icon,
+                onTap: () => Navigator.pushNamed(context, b.route),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+}
 
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+class _HomeCard extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HomeCard({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  State<_HomeCard> createState() => _HomeCardState();
+}
+
+class _HomeCardState extends State<_HomeCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 120),
+      vsync: this,
+    );
+    _scale = Tween<double>(
+      begin: 1,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final azul = const Color(0xFF181883);
+    final amarelo = const Color(0xFFFFD700);
+
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scale,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFFFD700), width: 2),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: amarelo, width: 1.4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: const Color(0xFF181883), size: iconSize),
-              const SizedBox(height: 10),
-              Flexible(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: const Color(0xFF181883),
-                    fontWeight: FontWeight.bold,
-                    fontSize: fontSize,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
+              Icon(widget.icon, color: azul, size: 34),
+              const SizedBox(height: 8),
+              Text(
+                widget.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: azul,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
                 ),
               ),
             ],

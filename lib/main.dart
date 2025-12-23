@@ -15,6 +15,7 @@ import 'pages/clientes/nova_reclamacao.dart';
 
 // PERFIL
 import 'pages/clientes/perfil.dart';
+
 // LOGIN
 import 'pages/login/primeiro_login.dart';
 
@@ -26,10 +27,11 @@ import 'pages/adm/sugestao_adm.dart';
 import 'pages/adm/indicacao_cliente_adm.dart';
 import 'pages/adm/solicitacao_orcamento_adm.dart';
 import 'pages/adm/alertas_protepac_adm.dart';
-import 'pages/adm/manifestacoes_geral.dart';
+import 'pages/clientes/manifestacoes_geral.dart';
 import 'pages/adm/elogios_adm.dart';
 import 'pages/adm/perfil_adm.dart';
-import 'pages/adm/adicionar_adm.dart';
+import 'pages/adm/adicionar_cliente.dart';
+import 'pages/adm/editar_cliente.dart';
 
 void main() => runApp(ProtepacApp());
 
@@ -50,7 +52,7 @@ class ProtepacApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black)),
       ),
-      initialRoute: '/login',
+      initialRoute: '/home_adm',
       onGenerateRoute: (settings) {
         switch (settings.name) {
           // LOGIN / PERFIL
@@ -110,9 +112,14 @@ class ProtepacApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => ManifestacoesGeralPage());
           case '/perfil_adm':
             return MaterialPageRoute(builder: (_) => PerfilAdmPage());
-          case '/adicionar_adm':
+          case '/perfil_adm':
+            return MaterialPageRoute(builder: (_) => PerfilAdmPage());
+          case '/editar_cliente':
+            return MaterialPageRoute(builder: (_) => EditarClientePage());
+          case '/adicionar_cliente':
             return MaterialPageRoute(builder: (_) => AdicionarAdmPage());
         }
+        return null;
       },
     );
   }
