@@ -1,7 +1,7 @@
 // lib/pages/nova_indicacao_cliente.dart
 
 import 'package:flutter/material.dart';
-import '../widgets/modal_mensagem_pos_envio.dart';
+import '../../widgets/modal_mensagem_pos_envio.dart';
 
 class NovaIndicacaoClientePage extends StatefulWidget {
   const NovaIndicacaoClientePage({Key? key}) : super(key: key);
@@ -16,17 +16,37 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
   bool alarme = false;
   bool comercial = false;
   bool residencial = false;
+
+  // novos "Outro"
+  bool outroSistema = false;
+  bool outroCategoria = false;
+
   bool enviando = false;
 
   final _nomeController = TextEditingController();
   final _telefoneController = TextEditingController();
 
+  final _controllerOutroSistema = TextEditingController();
+  final _controllerOutroCategoria = TextEditingController();
+
   bool get formValido {
     final nomeOk = _nomeController.text.trim().isNotEmpty;
     final telefoneOk = _telefoneController.text.trim().isNotEmpty;
-    final grupo1 = cftv || alarme;
-    final grupo2 = comercial || residencial;
-    return nomeOk && telefoneOk && grupo1 && grupo2;
+
+    final grupo1 = cftv || alarme || outroSistema;
+    final grupo2 = comercial || residencial || outroCategoria;
+
+    final outroSistemaOk =
+        !outroSistema || _controllerOutroSistema.text.trim().isNotEmpty;
+    final outroCategoriaOk =
+        !outroCategoria || _controllerOutroCategoria.text.trim().isNotEmpty;
+
+    return nomeOk &&
+        telefoneOk &&
+        grupo1 &&
+        grupo2 &&
+        outroSistemaOk &&
+        outroCategoriaOk;
   }
 
   void _enviar() {
@@ -60,8 +80,8 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
 
   @override
   Widget build(BuildContext context) {
-    final azul = Color(0xFF181883);
-    final laranja = Color(0xFFFF9900);
+    final azul = const Color(0xFF181883);
+    final laranja = const Color(0xFFFF9900);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -71,9 +91,6 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
             automaticallyImplyLeading: false,
             backgroundColor: Colors.white,
             elevation: 0,
-            pinned: false,
-            floating: false,
-            snap: false,
             expandedHeight: 70,
             flexibleSpace: SafeArea(
               child: Row(
@@ -108,6 +125,8 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
+
+                  // Nome
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -123,29 +142,16 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                   TextField(
                     controller: _nomeController,
                     textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      hintText: 'Digite aqui...',
-                      hintStyle: TextStyle(color: Color(0xFF181883)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2.2),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
                     onChanged: (_) => setState(() {}),
+                    decoration: _inputDecoration(
+                      laranja,
+                      azul,
+                      'Digite aqui...',
+                    ),
                   ),
                   const SizedBox(height: 12),
+
+                  // Telefone
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -162,29 +168,17 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                     controller: _telefoneController,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      hintText: 'Digite aqui...',
-                      hintStyle: TextStyle(color: Color(0xFF181883)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: laranja, width: 2.2),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
                     onChanged: (_) => setState(() {}),
+                    decoration: _inputDecoration(
+                      laranja,
+                      azul,
+                      'Digite aqui...',
+                    ),
                   ),
+
                   const SizedBox(height: 16),
+
+                  // Tipo de Sistema
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -197,30 +191,48 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _CheckBoxTile(
-                          value: cftv,
-                          onChanged: (val) => setState(() => cftv = val!),
-                          text: 'CFTV',
-                          azul: azul,
-                          laranja: laranja,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: _CheckBoxTile(
-                          value: alarme,
-                          onChanged: (val) => setState(() => alarme = val!),
-                          text: 'Alarme',
-                          azul: azul,
-                          laranja: laranja,
-                        ),
-                      ),
-                    ],
+                  _CheckBoxTile(
+                    value: cftv,
+                    onChanged: (val) => setState(() => cftv = val!),
+                    text: 'Câmera',
+                    azul: azul,
+                    laranja: laranja,
                   ),
+                  const SizedBox(height: 8),
+                  _CheckBoxTile(
+                    value: alarme,
+                    onChanged: (val) => setState(() => alarme = val!),
+                    text: 'Alarme',
+                    azul: azul,
+                    laranja: laranja,
+                  ),
+                  const SizedBox(height: 8),
+                  _CheckBoxTile(
+                    value: outroSistema,
+                    onChanged: (val) => setState(() => outroSistema = val!),
+                    text: 'Outros',
+                    azul: azul,
+                    laranja: laranja,
+                  ),
+                  if (outroSistema)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: TextField(
+                        controller: _controllerOutroSistema,
+                        minLines: 2,
+                        maxLines: null,
+                        onChanged: (_) => setState(() {}),
+                        decoration: _inputDecoration(
+                          laranja,
+                          azul,
+                          'Descreva outro sistema...',
+                        ),
+                      ),
+                    ),
+
                   const SizedBox(height: 16),
+
+                  // Categoria
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -248,7 +260,33 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                     azul: azul,
                     laranja: laranja,
                   ),
+                  const SizedBox(height: 8),
+                  _CheckBoxTile(
+                    value: outroCategoria,
+                    onChanged: (val) => setState(() => outroCategoria = val!),
+                    text: 'Outros',
+                    azul: azul,
+                    laranja: laranja,
+                  ),
+                  if (outroCategoria)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: TextField(
+                        controller: _controllerOutroCategoria,
+                        minLines: 2,
+                        maxLines: null,
+                        onChanged: (_) => setState(() {}),
+                        decoration: _inputDecoration(
+                          laranja,
+                          azul,
+                          'Descreva outra categoria...',
+                        ),
+                      ),
+                    ),
+
                   const SizedBox(height: 20),
+
+                  // Botão Enviar
                   Row(
                     children: [
                       Expanded(
@@ -281,13 +319,33 @@ class _NovaIndicacaoClientePageState extends State<NovaIndicacaoClientePage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  InputDecoration _inputDecoration(Color laranja, Color azul, String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: azul),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: laranja, width: 2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: laranja, width: 2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: laranja, width: 2.2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 }
@@ -330,7 +388,7 @@ class _CheckBoxTile extends StatelessWidget {
         activeColor: laranja,
         checkColor: azul,
         controlAffinity: ListTileControlAffinity.leading,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );

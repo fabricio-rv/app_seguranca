@@ -10,4 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:protepac/main.dart';
 
-void main() {}
+void main() {
+	testWidgets('app builds', (WidgetTester tester) async {
+		await tester.pumpWidget(ProtepacApp());
+		expect(find.byType(MaterialApp), findsOneWidget);
+	});
+}

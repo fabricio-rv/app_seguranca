@@ -1,21 +1,17 @@
 // lib/pages/home_page.dart
 
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navbar.dart';
+import '../../widgets/bottom_navbar.dart';
 
 class HomePage extends StatelessWidget {
   // Nova lista de botões na ordem solicitada
   final List<_MenuButton> buttons = [
     _MenuButton(
-      'Abertura de Chamados Técnicos',
+      'Solicitar Chamado Técnico,\nManutenção, Revisão',
       Icons.build_circle_rounded,
       '/novo_chamado_tecnico',
     ),
-    _MenuButton(
-      'Avisos de Segurança',
-      Icons.security_rounded,
-      '/novo_aviso_seguranca',
-    ),
+    _MenuButton('Alertas Protepac', Icons.warning, '/novo_aviso_seguranca'),
     _MenuButton(
       'Indicação de Novo Cliente',
       Icons.person_add_alt_1,
@@ -26,11 +22,8 @@ class HomePage extends StatelessWidget {
       Icons.request_page_rounded,
       '/nova_solicitacao_orcamento',
     ),
-    _MenuButton(
-      'Elogio / Reclamação',
-      Icons.thumbs_up_down_rounded,
-      '/novo_elogio_reclamacao',
-    ),
+    _MenuButton('Elogio', Icons.thumb_up, '/novo_elogio'),
+    _MenuButton('Reclamação', Icons.thumb_down, '/nova_reclamacao'),
     _MenuButton('Sugestão', Icons.lightbulb_outline, '/nova_sugestao'),
   ];
 
@@ -127,8 +120,8 @@ class _MenuCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Fontes responsivas
-    double fontSize = isSmall ? 12 : 14;
-    double iconSize = isSmall ? 30 : 35;
+    double fontSize = isSmall ? 12 : (title.length > 30 ? 11 : 14);
+    double iconSize = isSmall ? 35 : 40;
 
     return Material(
       color: Colors.white,

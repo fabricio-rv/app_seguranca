@@ -23,37 +23,46 @@ class _LoginPageState extends State<LoginPage> {
     String doc = docController.text.trim();
     String senha = senhaController.text.trim();
 
-    // Exemplo de login ADM, FUNCIONARIO, USUARIO...
-    // Adapte para checar CNPJ se necessário!
-    if (doc == '123.456.790-00' && senha == '123456') {
+    // CPF Usuário comum → Home
+    if (doc == '123.456.789-00' && senha == '1234') {
+      Navigator.pushReplacementNamed(context, '/home');
+      return;
+    }
+
+    // CPF ADM → Manifestacoes Geral
+    if (doc == '987.654.321-00' && senha == '1234') {
       Navigator.pushReplacementNamed(
         context,
-        '/manifestacoes_geral',
+        '/home_adm',
         arguments: {'role': 'adm'},
       );
-    } else if (doc == '987.654.321-00' && senha == '123456') {
+      return;
+    }
+
+    // CPF que exige Primeiro Login
+    if (doc == '123.456.790-00' && senha == '1234') {
       Navigator.pushReplacementNamed(
         context,
-        '/manifestacoes_geral',
-        arguments: {'role': 'funcionario'},
+        '/primeiro_login',
+        arguments: {'doc': doc}, // passa o doc pra próxima tela
       );
-    } else if (doc == '123.456.789-00' && senha == '123456') {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Erro'),
-          content: Text('${_labelDoc} ou senha inválidos!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
+      return;
     }
+
+    // Senha errada ou doc não reconhecido
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Erro'),
+        content: Text('${_labelDoc} ou senha inválidos!'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -87,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   },
                   style: TextStyle(
-                    color: Color(0xFFFF9900), // Mesma cor do antigo label!
+                    color: Color(0xFFFF9900),
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                   ),
@@ -195,28 +204,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   child: Text('Logar'),
-                ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: 280,
-                height: 42,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF181883),
-                    foregroundColor: Color(0xFFFFD700),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    textStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/primeiro_login'),
-                  child: Text('Primeiro login no app? Clique aqui'),
                 ),
               ),
               const SizedBox(height: 18),

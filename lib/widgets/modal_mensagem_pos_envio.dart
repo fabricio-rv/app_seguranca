@@ -1,5 +1,3 @@
-// lib/widgets/modal_mensagem_pos_envio.dart
-
 import 'package:flutter/material.dart';
 
 enum MensagemPosEnvioTipo { sucesso, erro, faltando }
@@ -19,18 +17,17 @@ class ModalMensagemPosEnvio extends StatelessWidget {
     this.onProsseguir,
     this.onTentarNovamente,
     this.onVoltar,
-    this.mensagemCustomizada, // <-- novo parâmetro
+    this.mensagemCustomizada,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String mensagem = '';
-    final azul = const Color(0xFF181883);
-    final laranja = const Color(0xFFFFA500);
+    const azul = Color(0xFF181883);
+    const laranja = Color(0xFFFF9900);
 
+    String mensagem = '';
     Widget botoesWidget;
 
-    // Layout responsivo para os botões de sucesso
     if (tipo == MensagemPosEnvioTipo.sucesso) {
       mensagem =
           mensagemCustomizada ??
@@ -38,7 +35,6 @@ class ModalMensagemPosEnvio extends StatelessWidget {
 
       botoesWidget = LayoutBuilder(
         builder: (context, constraints) {
-          // Em telas pequenas, empilha um embaixo do outro
           if (constraints.maxWidth < 380) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,7 +55,6 @@ class ModalMensagemPosEnvio extends StatelessWidget {
               ],
             );
           } else {
-            // Em telas grandes, botões lado a lado
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -83,16 +78,13 @@ class ModalMensagemPosEnvio extends StatelessWidget {
       );
     } else if (tipo == MensagemPosEnvioTipo.erro) {
       mensagem = 'Erro ao enviar sua mensagem!';
-      botoesWidget = Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _ModalButton(
-            texto: 'Tentar Novamente',
-            corBorda: laranja,
-            corTexto: azul,
-            onPressed: onTentarNovamente,
-          ),
-        ],
+      botoesWidget = Center(
+        child: _ModalButton(
+          texto: 'Tentar Novamente',
+          corBorda: laranja,
+          corTexto: azul,
+          onPressed: onTentarNovamente,
+        ),
       );
     } else {
       mensagem = 'Preencher os dados obrigatórios!';
@@ -108,7 +100,7 @@ class ModalMensagemPosEnvio extends StatelessWidget {
     }
 
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // ✅ sempre branco
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 22),
@@ -117,7 +109,7 @@ class ModalMensagemPosEnvio extends StatelessWidget {
           children: [
             Text(
               mensagem,
-              style: TextStyle(
+              style: const TextStyle(
                 color: azul,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -154,7 +146,7 @@ class _ModalButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white, // ✅ sempre branco
       ),
       onPressed: onPressed,
       child: Text(

@@ -1,7 +1,7 @@
 // lib/pages/nova_solicitacao_orcamento.dart
 
 import 'package:flutter/material.dart';
-import '../widgets/modal_mensagem_pos_envio.dart';
+import '../../widgets/modal_mensagem_pos_envio.dart';
 import 'package:flutter/services.dart';
 
 class NovaSolicitacaoOrcamentoPage extends StatefulWidget {
@@ -16,15 +16,24 @@ class _NovaSolicitacaoOrcamentoPageState
     extends State<NovaSolicitacaoOrcamentoPage> {
   bool ampliacaoCameras = false;
   bool ampliacaoAlarme = false;
+  bool outros = false;
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controllerOutros = TextEditingController();
   static const int maxLength = 500;
   static const int minLength = 5;
 
-  // Getter para habilitar o botão
   bool get formValido {
-    final textoOk = _controller.text.trim().length >= minLength;
-    final marcado = ampliacaoCameras || ampliacaoAlarme;
-    return textoOk && marcado;
+    final marcado = ampliacaoCameras || ampliacaoAlarme || outros;
+
+    // regra do campo principal (não é obrigatório se tiver só ampliação/outros)
+    final textoPrincipalOk =
+        _controller.text.trim().isEmpty ||
+        _controller.text.trim().length >= minLength;
+
+    // regra do campo "Outros": se marcado, tem que ter pelo menos 1 caracter
+    final outroOk = !outros || _controllerOutros.text.trim().isNotEmpty;
+
+    return marcado && outroOk && textoPrincipalOk;
   }
 
   void _enviar() {
@@ -108,7 +117,7 @@ class _NovaSolicitacaoOrcamentoPageState
                   _CheckBoxTile(
                     value: ampliacaoCameras,
                     onChanged: (val) => setState(() => ampliacaoCameras = val!),
-                    text: 'Ampliação de Câmeras',
+                    text: 'Instalação/Ampliação de Câmeras',
                     azul: azul,
                     laranja: laranja,
                   ),
@@ -116,10 +125,58 @@ class _NovaSolicitacaoOrcamentoPageState
                   _CheckBoxTile(
                     value: ampliacaoAlarme,
                     onChanged: (val) => setState(() => ampliacaoAlarme = val!),
-                    text: 'Ampliação do Alarme',
+                    text: 'Instalação/Ampliação do Alarme',
                     azul: azul,
                     laranja: laranja,
                   ),
+                  const SizedBox(height: 16),
+                  _CheckBoxTile(
+                    value: outros,
+                    onChanged: (val) => setState(() => outros = val!),
+                    text: 'Outros',
+                    azul: azul,
+                    laranja: laranja,
+                  ),
+                  if (outros) ...[
+                    const SizedBox(height: 12),
+                    Stack(
+                      children: [
+                        TextField(
+                          controller: _controllerOutros,
+                          minLines: 2,
+                          maxLines: null, // cresce conforme digita
+                          keyboardType: TextInputType.multiline,
+                          style: TextStyle(color: azul, fontSize: 16),
+                          decoration: InputDecoration(
+                            hintText: 'Descreva outro tipo de solicitação...',
+                            hintStyle: TextStyle(color: azul),
+                            fillColor: Colors.white,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(13),
+                              borderSide: BorderSide(color: laranja, width: 2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(13),
+                              borderSide: BorderSide(
+                                color: Color(0xFFFFD700),
+                                width: 2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(13),
+                              borderSide: BorderSide(
+                                color: Color(0xFFFFD700),
+                                width: 2.1,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.fromLTRB(24, 14, 24, 14),
+                          ),
+                          onChanged: (_) => setState(() {}), // 🔑 ESSA LINHA
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 6),
@@ -148,7 +205,7 @@ class _NovaSolicitacaoOrcamentoPageState
                         style: TextStyle(color: azul, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Digite aqui...',
-                          hintStyle: TextStyle(color: Color(0xFF181883)),
+                          hintStyle: TextStyle(color: azul),
                           fillColor: Colors.white,
                           filled: true,
                           border: OutlineInputBorder(

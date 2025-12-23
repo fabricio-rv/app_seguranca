@@ -1,44 +1,45 @@
-// lib/pages/novo_aviso_seguranca.dart
+// lib/pages/novo_elogio.dart
 
 import 'package:flutter/material.dart';
-import '../widgets/modal_mensagem_pos_envio.dart';
+import '../../widgets/modal_mensagem_pos_envio.dart';
 import 'package:flutter/services.dart';
 
-class NovoAvisoSegurancaPage extends StatefulWidget {
-  const NovoAvisoSegurancaPage({Key? key}) : super(key: key);
+class NovoElogioPage extends StatefulWidget {
+  const NovoElogioPage({Key? key}) : super(key: key);
 
   @override
-  State<NovoAvisoSegurancaPage> createState() => _NovoAvisoSegurancaPageState();
+  State<NovoElogioPage> createState() => _NovoElogioPageState();
 }
 
-class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
-  bool sobreCamera = false;
-  bool sobreAlarme = false;
+class _NovoElogioPageState extends State<NovoElogioPage> {
   final TextEditingController _controller = TextEditingController();
-
   static const int maxLength = 500;
-  static const int minLength = 5;
+  static const int minLength = 2;
 
-  bool get _formValido =>
-      (sobreCamera || sobreAlarme) &&
-      _controller.text.trim().length >= minLength;
+  bool get _formValido => _controller.text.trim().length >= minLength;
 
   void _enviar() {
     if (!_formValido) {
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) => ModalMensagemPosEnvio(
           tipo: MensagemPosEnvioTipo.faltando,
+          mensagemCustomizada:
+              'Por favor, escreva pelo menos $minLength caracteres.',
           onVoltar: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
       );
       return;
     }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => ModalMensagemPosEnvio(
         tipo: MensagemPosEnvioTipo.sucesso,
+        mensagemCustomizada:
+            'Muito obrigado pelo seu elogio! Nossa equipe agradece.',
         onVerManif: () {
           Navigator.of(context, rootNavigator: true).pop();
           Navigator.of(context).pushReplacementNamed('/minhas_manifestacoes');
@@ -53,8 +54,8 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final azul = Color(0xFF181883);
-    final laranja = Color(0xFFFF9900);
+    final azul = const Color(0xFF181883);
+    final laranja = const Color(0xFFFF9900);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -66,7 +67,6 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
             elevation: 0,
             pinned: false,
             floating: false,
-            snap: false,
             expandedHeight: 70,
             flexibleSpace: SafeArea(
               child: Row(
@@ -75,8 +75,6 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                     icon: Icon(Icons.arrow_back, color: azul),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  // Se quiser um título aqui, coloque:
-                  // Text('Aviso de Segurança', style: TextStyle(...))
                 ],
               ),
             ),
@@ -94,7 +92,7 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Por gentileza, especifique sua necessidade em relação à segurança, que nossa equipe entrará em contato.',
+                    'Escreva seu elogio para a Protepac.\nSua mensagem é muito importante para nós.',
                     style: TextStyle(
                       color: azul,
                       fontWeight: FontWeight.bold,
@@ -103,32 +101,15 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
-                  _CheckBoxTile(
-                    value: sobreCamera,
-                    onChanged: (v) => setState(() => sobreCamera = v!),
-                    text: 'Sobre Câmera',
-                    azul: azul,
-                    laranja: laranja,
-                  ),
-                  const SizedBox(height: 16),
-                  _CheckBoxTile(
-                    value: sobreAlarme,
-                    onChanged: (v) => setState(() => sobreAlarme = v!),
-                    text: 'Sobre Alarme',
-                    azul: azul,
-                    laranja: laranja,
-                  ),
-                  const SizedBox(height: 24),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Descreva seu aviso de Segurança',
+                      'Deixe seu elogio para a Protepac',
                       style: TextStyle(
                         color: laranja,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
-                      textAlign: TextAlign.left,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -139,32 +120,28 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                         minLines: 5,
                         maxLines: 16,
                         maxLength: maxLength,
-                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
                         style: TextStyle(color: azul, fontSize: 16),
                         decoration: InputDecoration(
-                          hintText: 'Digite aqui...',
-                          hintStyle: TextStyle(color: Color(0xFF181883)),
-                          fillColor: Colors.white,
-                          filled: true,
+                          hintText: 'Digite seu elogio aqui...',
+                          hintStyle: TextStyle(color: azul.withOpacity(0.6)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
                             borderSide: BorderSide(color: laranja, width: 2),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xFFFFD700),
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: laranja, width: 2),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xFFFFD700),
-                              width: 2.1,
-                            ),
+                            borderSide: BorderSide(color: laranja, width: 2.2),
                           ),
-                          contentPadding: EdgeInsets.fromLTRB(24, 12, 24, 45),
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            24,
+                            12,
+                            24,
+                            45,
+                          ),
                           counterText: '',
                         ),
                         onChanged: (_) => setState(() {}),
@@ -177,20 +154,6 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                           style: TextStyle(fontSize: 12, color: azul),
                         ),
                       ),
-                      if (_controller.text.isNotEmpty &&
-                          _controller.text.length < minLength)
-                        Positioned(
-                          bottom: 11,
-                          left: 16,
-                          child: Text(
-                            'Mínimo $minLength caracteres',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: azul,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -209,7 +172,6 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            elevation: 0,
                           ),
                           onPressed: _formValido ? _enviar : null,
                           child: const Text('Enviar'),
@@ -217,56 +179,12 @@ class _NovoAvisoSegurancaPageState extends State<NovoAvisoSegurancaPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CheckBoxTile extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool?> onChanged;
-  final String text;
-  final Color azul;
-  final Color laranja;
-
-  const _CheckBoxTile({
-    required this.value,
-    required this.onChanged,
-    required this.text,
-    required this.azul,
-    required this.laranja,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: laranja, width: 2),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-      ),
-      child: CheckboxListTile(
-        value: value,
-        onChanged: onChanged,
-        title: Text(
-          text,
-          style: TextStyle(
-            color: azul,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        activeColor: laranja,
-        checkColor: azul,
-        controlAffinity: ListTileControlAffinity.leading,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

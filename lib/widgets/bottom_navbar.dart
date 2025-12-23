@@ -12,14 +12,22 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const azul = Color(0xFF181883);
+    const unselectedColor = Color(0xFFB0B0B0);
+
+    final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+
     return Container(
-      height: 50, // <-- MUDE AQUI a altura da barra como quiser!
-      decoration: BoxDecoration(
+      padding: EdgeInsets.only(
+        top: 8,
+        bottom: bottomInset > 0 ? bottomInset : 12,
+      ),
+      decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 2,
+            blurRadius: 8,
             offset: Offset(0, -2),
           ),
         ],
@@ -27,56 +35,63 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(
+          _item(
             icon: Icons.home_rounded,
             label: 'Home',
             selected: selectedIndex == 0,
             onTap: () => onTap(0),
+            selectedColor: azul,
+            unselectedColor: unselectedColor,
           ),
-          _buildNavItem(
+          _item(
             icon: Icons.list_alt_rounded,
             label: 'Manifestações',
             selected: selectedIndex == 1,
             onTap: () => onTap(1),
+            selectedColor: azul,
+            unselectedColor: unselectedColor,
           ),
-          _buildNavItem(
+          _item(
             icon: Icons.person_rounded,
             label: 'Perfil',
             selected: selectedIndex == 2,
             onTap: () => onTap(2),
+            selectedColor: azul,
+            unselectedColor: unselectedColor,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem({
+  Widget _item({
     required IconData icon,
     required String label,
     required bool selected,
     required VoidCallback onTap,
+    required Color selectedColor,
+    required Color unselectedColor,
   }) {
-    final selectedColor = Color(0xFF181883);
-    final unselectedColor = Color(0xFFB0B0B0);
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        color: Colors.transparent,
-        padding: EdgeInsets.symmetric(horizontal: 8),
+      borderRadius: BorderRadius.circular(16),
+      splashColor: selectedColor.withOpacity(0.12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
               size: 24,
               color: selected ? selectedColor : unselectedColor,
             ),
-            SizedBox(height: 1),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                 color: selected ? selectedColor : unselectedColor,
               ),
             ),

@@ -1,26 +1,30 @@
+// lib/pages/nova_reclamacao.dart
+
 import 'package:flutter/material.dart';
-import '../widgets/modal_mensagem_pos_envio.dart';
+import '../../widgets/modal_mensagem_pos_envio.dart';
 import 'package:flutter/services.dart';
 
-class NovaSugestaoPage extends StatefulWidget {
-  const NovaSugestaoPage({Key? key}) : super(key: key);
+class NovaReclamacaoPage extends StatefulWidget {
+  const NovaReclamacaoPage({Key? key}) : super(key: key);
 
   @override
-  State<NovaSugestaoPage> createState() => _NovaSugestaoPageState();
+  State<NovaReclamacaoPage> createState() => _NovaReclamacaoPageState();
 }
 
-class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
+class _NovaReclamacaoPageState extends State<NovaReclamacaoPage> {
   final TextEditingController _controller = TextEditingController();
   static const int maxLength = 500;
-  static const int minLength = 5;
+  static const int minLength = 2;
+
+  bool get _formValido => _controller.text.trim().length >= minLength;
 
   void _enviar() {
-    if (_controller.text.trim().length < minLength) {
+    if (!_formValido) {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => ModalMensagemPosEnvio(
-          tipo: MensagemPosEnvioTipo.faltando, // <-- Corrija aqui!
+          tipo: MensagemPosEnvioTipo.faltando,
           mensagemCustomizada:
               'Por favor, escreva pelo menos $minLength caracteres.',
           onVoltar: () => Navigator.of(context, rootNavigator: true).pop(),
@@ -28,13 +32,14 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
       );
       return;
     }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => ModalMensagemPosEnvio(
         tipo: MensagemPosEnvioTipo.sucesso,
         mensagemCustomizada:
-            'Agradecemos pela mensagem! Nossa equipe vai avaliar sua sugestão e qualquer coisa entrará em contato.',
+            'Sua reclamação foi registrada. Nossa equipe já está trabalhando para resolver.',
         onVerManif: () {
           Navigator.of(context, rootNavigator: true).pop();
           Navigator.of(context).pushReplacementNamed('/minhas_manifestacoes');
@@ -49,8 +54,8 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final azul = Color(0xFF181883);
-    final laranja = Color(0xFFFF9900);
+    final azul = const Color(0xFF181883);
+    final laranja = const Color(0xFFFF9900);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,7 +92,7 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Por gentileza, escreva sua sugestão, que será avaliada pela nossa equipe.',
+                    'Escreva sua reclamação para a Protepac. Vamos analisar e tomar as providências necessárias.',
                     style: TextStyle(
                       color: azul,
                       fontWeight: FontWeight.bold,
@@ -99,13 +104,12 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Deixe sua sugestão para a Protepac',
+                      'Deixe sua reclamação para a Protepac',
                       style: TextStyle(
                         color: laranja,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
-                      textAlign: TextAlign.left,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -116,32 +120,28 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
                         minLines: 5,
                         maxLines: 16,
                         maxLength: maxLength,
-                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
                         style: TextStyle(color: azul, fontSize: 16),
                         decoration: InputDecoration(
-                          hintText: 'Digite aqui...',
-                          hintStyle: TextStyle(color: Color(0xFF181883)),
-                          fillColor: Colors.white,
-                          filled: true,
+                          hintText: 'Digite sua reclamação aqui...',
+                          hintStyle: TextStyle(color: azul.withOpacity(0.6)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
                             borderSide: BorderSide(color: laranja, width: 2),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xFFFFD700),
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: laranja, width: 2),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xFFFFD700),
-                              width: 2.1,
-                            ),
+                            borderSide: BorderSide(color: laranja, width: 2.2),
                           ),
-                          contentPadding: EdgeInsets.fromLTRB(24, 12, 24, 45),
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            24,
+                            12,
+                            24,
+                            45,
+                          ),
                           counterText: '',
                         ),
                         onChanged: (_) => setState(() {}),
@@ -154,20 +154,6 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
                           style: TextStyle(fontSize: 12, color: azul),
                         ),
                       ),
-                      if (_controller.text.isNotEmpty &&
-                          _controller.text.length < minLength)
-                        Positioned(
-                          bottom: 11,
-                          left: 16,
-                          child: Text(
-                            'Mínimo $minLength caracteres',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: azul,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -186,17 +172,14 @@ class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            elevation: 0,
                           ),
-                          onPressed: _controller.text.trim().length >= minLength
-                              ? _enviar
-                              : null,
+                          onPressed: _formValido ? _enviar : null,
                           child: const Text('Enviar'),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

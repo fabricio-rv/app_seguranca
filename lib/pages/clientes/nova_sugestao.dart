@@ -1,84 +1,49 @@
-// lib/pages/novo_chamado_tecnico.dart
-
 import 'package:flutter/material.dart';
-import '../widgets/modal_mensagem_pos_envio.dart';
+import '../../widgets/modal_mensagem_pos_envio.dart';
 import 'package:flutter/services.dart';
 
-class NovoChamadoTecnicoPage extends StatefulWidget {
-  const NovoChamadoTecnicoPage({Key? key}) : super(key: key);
+class NovaSugestaoPage extends StatefulWidget {
+  const NovaSugestaoPage({Key? key}) : super(key: key);
 
   @override
-  State<NovoChamadoTecnicoPage> createState() => _NovoChamadoTecnicoPageState();
+  State<NovaSugestaoPage> createState() => _NovaSugestaoPageState();
 }
 
-class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
-  bool cftv = false;
-  bool alarme = false;
-  bool enviando = false;
+class _NovaSugestaoPageState extends State<NovaSugestaoPage> {
   final TextEditingController _controller = TextEditingController();
-
   static const int maxLength = 500;
   static const int minLength = 5;
 
-  bool get _formValido =>
-      (cftv || alarme) && _controller.text.trim().length >= minLength;
-
   void _enviar() {
-    if (!_formValido) {
-      showGeneralDialog(
+    if (_controller.text.trim().length < minLength) {
+      showDialog(
         context: context,
-        barrierDismissible: true,
-        barrierLabel: MaterialLocalizations.of(
-          context,
-        ).modalBarrierDismissLabel,
-        barrierColor: Colors.black45,
-        transitionDuration: const Duration(milliseconds: 200),
-        pageBuilder:
-            (
-              BuildContext buildContext,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-            ) {
-              return Center(
-                child: ModalMensagemPosEnvio(
-                  tipo: MensagemPosEnvioTipo.faltando,
-                  onVoltar: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                ),
-              );
-            },
+        barrierDismissible: false,
+        builder: (_) => ModalMensagemPosEnvio(
+          tipo: MensagemPosEnvioTipo.faltando, // <-- Corrija aqui!
+          mensagemCustomizada:
+              'Por favor, escreva pelo menos $minLength caracteres.',
+          onVoltar: () => Navigator.of(context, rootNavigator: true).pop(),
+        ),
       );
       return;
     }
-
-    showGeneralDialog(
+    showDialog(
       context: context,
       barrierDismissible: false,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black45,
-      transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder:
-          (
-            BuildContext buildContext,
-            Animation<double> animation,
-            Animation<double> secondaryAnimation,
-          ) {
-            return Center(
-              child: ModalMensagemPosEnvio(
-                tipo: MensagemPosEnvioTipo.sucesso,
-                onVerManif: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.of(
-                    context,
-                  ).pushReplacementNamed('/minhas_manifestacoes');
-                },
-                onProsseguir: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.of(context).pushReplacementNamed('/home');
-                },
-              ),
-            );
-          },
+      builder: (_) => ModalMensagemPosEnvio(
+        tipo: MensagemPosEnvioTipo.sucesso,
+        mensagemCustomizada:
+            'Agradecemos pela mensagem! Nossa equipe vai avaliar sua sugestão e qualquer coisa entrará em contato.',
+        onVerManif: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context).pushReplacementNamed('/minhas_manifestacoes');
+        },
+        onProsseguir: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context).pushReplacementNamed('/home');
+        },
+      ),
     );
   }
 
@@ -92,12 +57,11 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            automaticallyImplyLeading: false, // removemos o padrão
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.white,
             elevation: 0,
-            pinned: false, // não fixa, rola junto
+            pinned: false,
             floating: false,
-            snap: false,
             expandedHeight: 70,
             flexibleSpace: SafeArea(
               child: Row(
@@ -105,14 +69,6 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
                   IconButton(
                     icon: Icon(Icons.arrow_back, color: azul),
                     onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(
-                    '', // Deixe vazio se não quer título na barra
-                    style: TextStyle(
-                      color: azul,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
                   ),
                 ],
               ),
@@ -131,7 +87,7 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Por gentileza, especifique sua necessidade de chamado técnico, que nossa equipe entrará em contato.',
+                    'Por gentileza, escreva sua sugestão, que será avaliada pela nossa equipe.',
                     style: TextStyle(
                       color: azul,
                       fontWeight: FontWeight.bold,
@@ -140,26 +96,10 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
-                  _CheckBoxTile(
-                    value: cftv,
-                    onChanged: (val) => setState(() => cftv = val!),
-                    text: 'CFTV',
-                    azul: azul,
-                    laranja: laranja,
-                  ),
-                  const SizedBox(height: 16),
-                  _CheckBoxTile(
-                    value: alarme,
-                    onChanged: (val) => setState(() => alarme = val!),
-                    text: 'Alarme',
-                    azul: azul,
-                    laranja: laranja,
-                  ),
-                  const SizedBox(height: 24),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Descreva seu Chamado Técnico',
+                      'Deixe sua sugestão para a Protepac',
                       style: TextStyle(
                         color: laranja,
                         fontWeight: FontWeight.bold,
@@ -248,7 +188,9 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
                             ),
                             elevation: 0,
                           ),
-                          onPressed: _formValido ? _enviar : null,
+                          onPressed: _controller.text.trim().length >= minLength
+                              ? _enviar
+                              : null,
                           child: const Text('Enviar'),
                         ),
                       ),
@@ -260,50 +202,6 @@ class _NovoChamadoTecnicoPageState extends State<NovoChamadoTecnicoPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CheckBoxTile extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool?> onChanged;
-  final String text;
-  final Color azul;
-  final Color laranja;
-
-  const _CheckBoxTile({
-    required this.value,
-    required this.onChanged,
-    required this.text,
-    required this.azul,
-    required this.laranja,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: laranja, width: 2),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-      ),
-      child: CheckboxListTile(
-        value: value,
-        onChanged: onChanged,
-        title: Text(
-          text,
-          style: TextStyle(
-            color: azul,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        activeColor: laranja,
-        checkColor: azul,
-        controlAffinity: ListTileControlAffinity.leading,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

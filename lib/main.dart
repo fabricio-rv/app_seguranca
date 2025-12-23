@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
 
-import 'pages/esqueci_senha.dart';
-import 'pages/home.dart';
-import 'pages/login.dart';
-import 'pages/minhas_manifestacoes.dart';
-import 'pages/nova_indicacao_cliente.dart';
-import 'pages/nova_solicitacao_orcamento.dart';
-import 'pages/nova_sugestao.dart';
-import 'pages/novo_aviso_seguranca.dart';
-import 'pages/novo_chamado_tecnico.dart';
-import 'pages/novo_elogio_reclamacao.dart';
-import 'pages/perfil.dart';
-import 'pages/perfil_geral.dart'; // <-- Adiciona esta linha!
-import 'pages/primeiro_login.dart';
-import 'pages/manifestacoes_geral.dart';
+// CLIENTES
+import 'pages/login/esqueci_senha.dart';
+import 'pages/clientes/home.dart';
+import 'pages/login/login.dart';
+import 'pages/clientes/minhas_manifestacoes.dart';
+import 'pages/clientes/nova_indicacao_cliente.dart';
+import 'pages/clientes/nova_solicitacao_orcamento.dart';
+import 'pages/clientes/nova_sugestao.dart';
+import 'pages/clientes/novo_alerta.dart';
+import 'pages/clientes/novo_chamado.dart';
+import 'pages/clientes/novo_elogio.dart';
+import 'pages/clientes/nova_reclamacao.dart';
+
+// PERFIL
+import 'pages/clientes/perfil.dart';
+
+// LOGIN
+import 'pages/login/primeiro_login.dart';
+
+// ADM
+import 'pages/adm/home_adm.dart';
+import 'pages/adm/chamado_adm.dart';
+import 'pages/adm/reclamacao_adm.dart';
+import 'pages/adm/sugestao_adm.dart';
+import 'pages/adm/indicacao_cliente_adm.dart';
+import 'pages/adm/solicitacao_orcamento_adm.dart';
+import 'pages/adm/alertas_protepac_adm.dart';
+import 'pages/clientes/manifestacoes_geral.dart';
+import 'pages/adm/elogios_adm.dart';
+import 'pages/adm/perfil_adm.dart';
+import 'pages/adm/adicionar_cliente.dart';
+import 'pages/adm/editar_cliente.dart';
 
 void main() => runApp(ProtepacApp());
 
@@ -23,23 +41,35 @@ class ProtepacApp extends StatelessWidget {
     return MaterialApp(
       title: 'Protepac',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
+      theme: ThemeData(
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: const Color(0xFF181883), // azul
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF181883), // azul
+          secondary: Color(0xFFFF9900), // laranja
+          surface: Colors.white,
+        ),
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black)),
+      ),
+      initialRoute: '/home_adm',
       onGenerateRoute: (settings) {
         switch (settings.name) {
+          // LOGIN / PERFIL
           case '/login':
             return MaterialPageRoute(builder: (_) => LoginPage());
           case '/primeiro_login':
             return MaterialPageRoute(builder: (_) => PrimeiroLoginPage());
           case '/esqueci_senha':
             return MaterialPageRoute(builder: (_) => EsqueciSenhaPage());
+          case '/perfil':
+            return MaterialPageRoute(builder: (_) => PerfilPage());
+
+          // CLIENTES
           case '/home':
             return MaterialPageRoute(builder: (_) => HomePage());
           case '/minhas_manifestacoes':
             return MaterialPageRoute(builder: (_) => MinhasManifestacoesPage());
-          case '/perfil':
-            return MaterialPageRoute(builder: (_) => PerfilPage());
-          case '/perfil_geral':
-            return MaterialPageRoute(builder: (_) => PerfilGeralPage());
           case '/nova_indicacao_cliente':
             return MaterialPageRoute(
               builder: (_) => NovaIndicacaoClientePage(),
@@ -54,31 +84,42 @@ class ProtepacApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => NovoAvisoSegurancaPage());
           case '/novo_chamado_tecnico':
             return MaterialPageRoute(builder: (_) => NovoChamadoTecnicoPage());
-          case '/novo_elogio_reclamacao':
+          case '/novo_elogio':
+            return MaterialPageRoute(builder: (_) => NovoElogioPage());
+          case '/nova_reclamacao':
+            return MaterialPageRoute(builder: (_) => NovaReclamacaoPage());
+
+          // ADM
+          case '/home_adm':
+            return MaterialPageRoute(builder: (_) => HomeAdmPage());
+          case '/chamado_adm':
+            return MaterialPageRoute(builder: (_) => ChamadoAdmPage());
+          case '/reclamacao_adm':
+            return MaterialPageRoute(builder: (_) => ReclamacaoAdmPage());
+          case '/sugestao_adm':
+            return MaterialPageRoute(builder: (_) => SugestaoAdmPage());
+          case '/indicacao_cliente_adm':
+            return MaterialPageRoute(builder: (_) => IndicacaoClienteAdmPage());
+          case '/solicitacao_orcamento_adm':
             return MaterialPageRoute(
-              builder: (_) => NovoElogioReclamacaoPage(),
+              builder: (_) => SolicitacaoOrcamentoAdmPage(),
             );
+          case '/alertas_protepac_adm':
+            return MaterialPageRoute(builder: (_) => AlertasProtepacAdmPage());
+          case '/elogios_adm':
+            return MaterialPageRoute(builder: (_) => ElogiosAdmPage());
           case '/manifestacoes_geral':
             return MaterialPageRoute(builder: (_) => ManifestacoesGeralPage());
-          default:
-            return MaterialPageRoute(builder: (_) => LoginPage());
+          case '/perfil_adm':
+            return MaterialPageRoute(builder: (_) => PerfilAdmPage());
+          case '/perfil_adm':
+            return MaterialPageRoute(builder: (_) => PerfilAdmPage());
+          case '/editar_cliente':
+            return MaterialPageRoute(builder: (_) => EditarClientePage());
+          case '/adicionar_cliente':
+            return MaterialPageRoute(builder: (_) => AdicionarAdmPage());
         }
-      },
-      routes: {
-        '/login': (_) => LoginPage(),
-        '/primeiro_login': (_) => PrimeiroLoginPage(),
-        '/esqueci_senha': (_) => EsqueciSenhaPage(),
-        '/home': (_) => HomePage(),
-        '/minhas_manifestacoes': (_) => MinhasManifestacoesPage(),
-        '/perfil': (_) => PerfilPage(),
-        '/perfil_geral': (_) => PerfilGeralPage(), // <-- Adiciona aqui também!
-        '/nova_indicacao_cliente': (_) => NovaIndicacaoClientePage(),
-        '/nova_solicitacao_orcamento': (_) => NovaSolicitacaoOrcamentoPage(),
-        '/nova_sugestao': (_) => NovaSugestaoPage(),
-        '/novo_aviso_seguranca': (_) => NovoAvisoSegurancaPage(),
-        '/novo_chamado_tecnico': (_) => NovoChamadoTecnicoPage(),
-        '/novo_elogio_reclamacao': (_) => NovoElogioReclamacaoPage(),
-        '/manifestacoes_geral': (_) => ManifestacoesGeralPage(),
+        return null;
       },
     );
   }
