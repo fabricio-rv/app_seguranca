@@ -40,7 +40,7 @@ class CustomBottomNavBarGeral extends StatelessWidget {
             icon: Icons.home_rounded,
             label: 'Home',
             selected: selectedIndex == 0,
-            onTap: () => onTap(0),
+            onTap: () => onTap(0), // ✅ Agora chama a função do Pai
             selectedColor: azul,
             unselectedColor: unselectedColor,
           ),
@@ -48,7 +48,8 @@ class CustomBottomNavBarGeral extends StatelessWidget {
             icon: Icons.person_rounded,
             label: 'Perfil',
             selected: selectedIndex == 1,
-            onTap: () => Navigator.pushNamed(context, '/perfil_adm'),
+            onTap: () =>
+                onTap(1), // ✅ MUDANÇA CRÍTICA: Agora chama a função do Pai
             selectedColor: azul,
             unselectedColor: unselectedColor,
           ),

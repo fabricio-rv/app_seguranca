@@ -15,8 +15,10 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _controller.forward();
   }
@@ -25,6 +27,122 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  // --- MODAL PREMIUM ---
+  void _mostrarDialogo({
+    required String titulo,
+    required String mensagem,
+    required String textoConfirmar,
+    required VoidCallback onConfirmar,
+    required IconData icone,
+    Color corIcone = const Color(0xFF181883),
+    bool isDestructive = false,
+  }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: (isDestructive ? Colors.red : corIcone).withOpacity(
+                      0.1,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icone,
+                    size: 32,
+                    color: isDestructive ? Colors.red : corIcone,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  titulo,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF181883),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  mensagem,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF6B7280),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: const BorderSide(color: Color(0xFFE5E7EB)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(
+                            color: Color(0xFF6B7280),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: isDestructive
+                              ? Colors.red
+                              : corIcone,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onConfirmar();
+                        },
+                        child: Text(
+                          textoConfirmar,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -43,10 +161,7 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFFFFFFF),
-                Color(0xFFFFFDF2),
-              ],
+              colors: [Color(0xFFFFFFFF), Color(0xFFFFFDF2)],
             ),
           ),
           child: SingleChildScrollView(
@@ -85,6 +200,8 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
                   _acoesCard(azul, amarelo, cinza, borda),
                   const SizedBox(height: 28),
                   _alterarSenha(azul),
+                  const SizedBox(height: 20),
+                  _botaoSair(),
                 ],
               ),
             ),
@@ -94,9 +211,7 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
       bottomNavigationBar: CustomBottomNavBarGeral(
         selectedIndex: 1,
         onTap: (i) {
-          if (i == 0) {
-            Navigator.pushReplacementNamed(context, '/home_adm');
-          }
+          if (i == 0) Navigator.pushReplacementNamed(context, '/home_adm');
         },
       ),
     );
@@ -195,7 +310,8 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
           ),
           const SizedBox(height: 18),
           ...children.map(
-            (c) => Padding(padding: const EdgeInsets.only(bottom: 14), child: c),
+            (c) =>
+                Padding(padding: const EdgeInsets.only(bottom: 14), child: c),
           ),
         ],
       ),
@@ -204,12 +320,35 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
 
   Widget _acoesCard(Color azul, Color amarelo, Color cinza, Color borda) {
     final acoes = [
-      _acao(Icons.check_circle, 'Respondeu chamado', 'Chamado #1247', 'Hoje • 14:30', const Color(0xFF10B981)),
-      _acao(Icons.notifications, 'Enviou alerta', 'Alerta de segurança', 'Hoje • 12:15', const Color(0xFFF59E0B)),
-      _acao(Icons.person_add, 'Adicionou cliente', 'ABC Segurança', 'Ontem • 09:45', azul),
-      _acao(Icons.edit, 'Editou perfil', 'Dados atualizados', '22/12 • 16:10', azul),
+      _acao(
+        Icons.check_circle,
+        'Respondeu chamado',
+        'Chamado #1247',
+        'Hoje • 14:30',
+        const Color(0xFF10B981),
+      ),
+      _acao(
+        Icons.notifications,
+        'Enviou alerta',
+        'Alerta de segurança',
+        'Hoje • 12:15',
+        const Color(0xFFF59E0B),
+      ),
+      _acao(
+        Icons.person_add,
+        'Adicionou cliente',
+        'ABC Segurança',
+        'Ontem • 09:45',
+        azul,
+      ),
+      _acao(
+        Icons.edit,
+        'Editou perfil',
+        'Dados atualizados',
+        '22/12 • 16:10',
+        azul,
+      ),
     ];
-
     final visiveis = _expanded ? acoes : acoes.take(3).toList();
 
     return Container(
@@ -275,8 +414,14 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(a['t'], style: const TextStyle(fontWeight: FontWeight.w600)),
-                        Text(a['d'], style: TextStyle(color: cinza, fontSize: 12)),
+                        Text(
+                          a['t'],
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          a['d'],
+                          style: TextStyle(color: cinza, fontSize: 12),
+                        ),
                       ],
                     ),
                   ),
@@ -302,48 +447,53 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
     );
   }
 
-  Widget _row(String l, String v, Color azul, Color cinza) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(l, style: TextStyle(color: cinza)),
-        Text(v, style: TextStyle(color: azul, fontWeight: FontWeight.w600)),
-      ],
-    );
-  }
+  Widget _row(String l, String v, Color azul, Color cinza) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(l, style: TextStyle(color: cinza)),
+      Text(
+        v,
+        style: TextStyle(color: azul, fontWeight: FontWeight.w600),
+      ),
+    ],
+  );
 
-  Widget _rowStatus(String l, String v, Color c) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(l, style: const TextStyle(color: Color(0xFF6B7280))),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: c.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            v,
-            style: TextStyle(color: c, fontWeight: FontWeight.w700),
-          ),
+  Widget _rowStatus(String l, String v, Color c) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(l, style: const TextStyle(color: Color(0xFF6B7280))),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: c.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(20),
         ),
-      ],
-    );
-  }
+        child: Text(
+          v,
+          style: TextStyle(color: c, fontWeight: FontWeight.w700),
+        ),
+      ),
+    ],
+  );
 
   Widget _alterarSenha(Color azul) {
     return InkWell(
-      onTap: () => Navigator.pushNamed(context, '/esqueci_senha'),
+      onTap: () {
+        _mostrarDialogo(
+          titulo: 'Alterar Senha',
+          mensagem:
+              'Por segurança, você será redirecionado para a tela de recuperação de senha. Deseja continuar?',
+          textoConfirmar: 'Sim, continuar',
+          icone: Icons.lock_reset_rounded,
+          onConfirmar: () => Navigator.pushNamed(context, '/esqueci_senha'),
+        );
+      },
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              azul.withOpacity(0.08),
-              azul.withOpacity(0.04),
-            ],
+            colors: [azul.withOpacity(0.08), azul.withOpacity(0.04)],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: azul.withOpacity(0.35), width: 1.5),
@@ -366,12 +516,51 @@ class _PerfilAdmPageState extends State<PerfilAdmPage>
     );
   }
 
+  Widget _botaoSair() {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: OutlinedButton.icon(
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: Colors.red.withOpacity(0.3)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          backgroundColor: Colors.red.withOpacity(0.02),
+        ),
+        onPressed: () {
+          _mostrarDialogo(
+            titulo: 'Sair da Conta',
+            mensagem:
+                'Tem certeza que deseja desconectar sua conta de administrador?',
+            textoConfirmar: 'Sair',
+            icone: Icons.logout_rounded,
+            isDestructive: true,
+            onConfirmar: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/login',
+              (route) => false,
+            ),
+          );
+        },
+        icon: Icon(Icons.logout_rounded, color: Colors.red[400]),
+        label: Text(
+          'Sair do Painel ADM',
+          style: TextStyle(
+            color: Colors.red[400],
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
   Map<String, dynamic> _acao(
     IconData i,
     String t,
     String d,
     String h,
     Color c,
-  ) =>
-      {'icon': i, 't': t, 'd': d, 'h': h, 'color': c};
+  ) => {'icon': i, 't': t, 'd': d, 'h': h, 'color': c};
 }

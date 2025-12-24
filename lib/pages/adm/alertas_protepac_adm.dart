@@ -56,10 +56,19 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
       return;
     }
 
+    // Modal de Sucesso Premium (Simulado com SnackBar por enquanto, ou pode ser um Dialog)
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Alerta enviado aos clientes: ${tituloController.text}"),
-        backgroundColor: Colors.green,
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(child: Text("Alerta enviado: ${tituloController.text}")),
+          ],
+        ),
+        backgroundColor: const Color(0xFF10B981), // Verde sucesso
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
 
@@ -71,6 +80,7 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFDF0),
+      // --- HEADER PRESERVADO (Conforme solicitado) ---
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(64),
         child: Column(
@@ -97,6 +107,7 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
           ],
         ),
       ),
+      // --- CORPO REMODELADO ---
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -118,7 +129,7 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 🔔 Título
+                      // 🔔 Título (Preservado o estilo, ajustado layout)
                       Center(
                         child: Column(
                           children: [
@@ -146,9 +157,9 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
 
                       const SizedBox(height: 32),
 
-                      // 📌 Card principal
+                      // 📌 Card principal Moderno
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
@@ -156,7 +167,7 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.06),
-                              blurRadius: 14,
+                              blurRadius: 16,
                               offset: const Offset(0, 8),
                             ),
                           ],
@@ -164,81 +175,89 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Cabeçalho do Card
                             Row(
                               children: [
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: laranja,
-                                  size: 26,
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: laranja.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: laranja,
+                                    size: 28,
+                                  ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 14),
                                 Text(
                                   'Novo Alerta',
                                   style: TextStyle(
                                     color: azul,
-                                    fontSize: 18,
+                                    fontSize: 19,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ],
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 24),
 
-                            Text(
-                              'Título do Alerta',
-                              style: TextStyle(
-                                color: laranja,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
+                            // Campo Título
+                            _buildLabel('Título do Alerta'),
+                            const SizedBox(height: 8),
                             _buildInput(
                               controller: tituloController,
                               hint: 'Ex: Manutenção programada',
                             ),
 
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 20),
 
-                            Text(
-                              'Descrição',
-                              style: TextStyle(
-                                color: laranja,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
+                            // Campo Descrição
+                            _buildLabel('Descrição Detalhada'),
+                            const SizedBox(height: 8),
                             _buildInput(
                               controller: descricaoController,
                               hint:
-                                  'Informe os detalhes do alerta para os clientes',
-                              maxLines: 6,
+                                  'Informe os detalhes do alerta para os clientes...',
+                              maxLines: 5,
                             ),
 
-                            const SizedBox(height: 28),
+                            const SizedBox(height: 32),
 
+                            // Botão Publicar Premium
                             SizedBox(
                               width: double.infinity,
-                              height: 52,
-                              child: ElevatedButton.icon(
-                                icon: const Icon(Icons.send),
-                                label: const Text(
-                                  'Publicar e Notificar Clientes',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                              height: 54,
+                              child: ElevatedButton(
+                                onPressed: _publicarAlerta,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: amarelo,
                                   foregroundColor: azul,
+                                  elevation: 4,
+                                  shadowColor: amarelo.withOpacity(0.4),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(28),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
                                   ),
                                 ),
-                                onPressed: _publicarAlerta,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(Icons.send_rounded, size: 20),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Publicar e Notificar',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -255,29 +274,58 @@ class _AlertasProtepacAdmPageState extends State<AlertasProtepacAdmPage>
     );
   }
 
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(color: azul, fontWeight: FontWeight.w700, fontSize: 15),
+    );
+  }
+
   Widget _buildInput({
     required TextEditingController controller,
     required String hint,
     int maxLines = 1,
   }) {
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      style: TextStyle(color: azul),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: cinza),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: amarelo, width: 2),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF181883).withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        style: TextStyle(
+          color: const Color(0xFF181883),
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: amarelo, width: 2.2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(
+            color: const Color(0xFF6B7280),
+            fontWeight: FontWeight.normal,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: amarelo.withOpacity(0.6), width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: amarelo, width: 2.0),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 16,
+          ),
         ),
       ),
     );
